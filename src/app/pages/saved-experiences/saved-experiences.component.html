@@ -1,0 +1,42 @@
+<div class="saved-wrapper">
+  <div class="page-header">
+    <h1>🔖 Saved Experiences</h1>
+    <p>Places you've saved to visit later</p>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading your saved experiences...</p>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && savedExperiences.length === 0">
+    <div class="empty-icon">🔖</div>
+    <h3>No saved experiences yet</h3>
+    <p>Start exploring and save places you'd like to visit!</p>
+  </div>
+
+  <div class="saved-grid" *ngIf="!loading && savedExperiences.length > 0">
+    <div class="saved-card" *ngFor="let exp of savedExperiences">
+      <div class="card-image"
+        [style.background-image]="exp.photo ? 'url(' + exp.photo + ')' : 'none'"
+        (click)="goToDetails(exp)">
+        <div class="no-image" *ngIf="!exp.photo">📍</div>
+      </div>
+
+      <div class="card-content">
+        <div class="card-info" (click)="goToDetails(exp)">
+          <h3>{{ exp.name }}</h3>
+          <p class="address">📍 {{ exp.address }}</p>
+          <div class="card-meta">
+            <span class="rating" *ngIf="exp.rating">⭐ {{ exp.rating }}</span>
+            <span class="category-tag">{{ exp.category }}</span>
+          </div>
+        </div>
+
+        <button class="remove-btn" (click)="removeExperience(exp.placeId)">
+          🗑️ Remove
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

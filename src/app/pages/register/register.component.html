@@ -1,0 +1,59 @@
+<div class="login-wrapper">
+  <div class="login-left">
+    <h1>Explore Together</h1>
+    <p>Your next favorite experience awaits.</p>
+  </div>
+
+  <div class="login-card">
+    <ng-container *ngIf="step === 'register'">
+      <h2>Create Account</h2>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" [(ngModel)]="name" placeholder="Enter your full name" />
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" [(ngModel)]="phone" placeholder="Enter your phone number" />
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="email" placeholder="Enter your email" />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" placeholder="Create a password" />
+      </div>
+
+      <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <div class="button-group">
+        <button class="btn-primary" (click)="onRegister()" [disabled]="loading">
+          {{ loading ? 'Please wait...' : 'Register' }}
+        </button>
+        <button class="btn-secondary" (click)="goToLogin()">Back to Login</button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="step === 'otp'">
+      <h2>Verify OTP</h2>
+      <p class="otp-hint">Check your backend terminal for the OTP code</p>
+
+      <div class="form-group">
+        <label>OTP</label>
+        <input type="text" [(ngModel)]="otp" placeholder="Enter 6-digit OTP" maxlength="6" />
+      </div>
+
+      <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <div class="button-group">
+        <button class="btn-primary" (click)="onVerifyOtp()" [disabled]="loading">
+          {{ loading ? 'Verifying...' : 'Verify OTP' }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

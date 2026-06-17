@@ -1,0 +1,60 @@
+<div class="details-wrapper" *ngIf="experience">
+  <button class="back-btn" (click)="goBack()">← Back</button>
+
+  <div class="details-card">
+    <div class="details-image"
+  [style.background-image]="experience.photo ? 'url(&quot;' + experience.photo + '&quot;)' : 'none'">
+      <div class="no-image" *ngIf="!experience.photo">📍</div>
+      <div class="open-badge" *ngIf="experience.isOpen === true">Open Now</div>
+      <div class="closed-badge" *ngIf="experience.isOpen === false">Closed</div>
+    </div>
+
+    <div class="details-content">
+      <div class="details-header">
+        <div>
+          <h1>{{ experience.name }}</h1>
+          <p class="category-tag">{{ experience.category }}</p>
+        </div>
+        <button class="save-btn" (click)="toggleSave()" [class.saved]="isSaved">
+          {{ isSaved ? '🔖 Saved' : '➕ Save' }}
+        </button>
+      </div>
+
+      <div class="details-meta">
+        <div class="meta-item" *ngIf="experience.rating">
+          <span class="meta-icon">⭐</span>
+          <div>
+            <span class="meta-label">Rating</span>
+            <span class="meta-value">{{ experience.rating }} / 5</span>
+          </div>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-icon">💰</span>
+          <div>
+            <span class="meta-label">Price</span>
+            <span class="meta-value">{{ getPriceLabel(experience.priceLevel) }}</span>
+          </div>
+        </div>
+
+        <div class="meta-item" *ngIf="experience.isOpen !== null">
+          <span class="meta-icon">🕐</span>
+          <div>
+            <span class="meta-label">Status</span>
+            <span class="meta-value" [class.open]="experience.isOpen" [class.closed]="!experience.isOpen">
+              {{ experience.isOpen ? 'Open Now' : 'Closed' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="details-address">
+        <h3>📍 Location</h3>
+        <p>{{ experience.address }}</p>
+        <button class="maps-btn" (click)="openInMaps()">
+          Open in Google Maps →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

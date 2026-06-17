@@ -1,0 +1,55 @@
+<div class="dashboard-wrapper">
+  <div class="hero-section">
+    <div class="hero-text">
+      <h1>Welcome back, {{ currentUser?.name || 'Explorer' }}! 👋</h1>
+      <p>What would you like to explore today?</p>
+    </div>
+
+    <div class="location-card" *ngIf="!locationLoading && nearestStation">
+      <div class="location-icon">🚇</div>
+      <div class="location-info">
+        <span class="location-label">Nearest Metro Station</span>
+        <span class="location-name">{{ nearestStation.name }}</span>
+        <span class="location-line">{{ nearestStation.line }} Line</span>
+      </div>
+      <button class="explore-station-btn" (click)="goToNearestStation()">
+        Explore nearby →
+      </button>
+    </div>
+
+    <div class="location-card loading" *ngIf="locationLoading">
+      <div class="location-icon">📍</div>
+      <div class="location-info">
+        <span class="location-label">Detecting your location...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="categories-section">
+    <h2>What are you looking for?</h2>
+    <p class="subtitle">Pick a category to discover real experiences near you</p>
+
+    <div class="categories-grid">
+      <div
+        class="category-card"
+        *ngFor="let cat of categories"
+        (click)="goToCategory(cat.filter)">
+        <div class="category-icon">{{ cat.icon }}</div>
+        <h3>{{ cat.title }}</h3>
+        <p>{{ cat.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="metro-section" (click)="goToMetro()">
+    <div class="metro-content">
+      <span class="metro-icon">🚇</span>
+      <div>
+        <h3>Explore by Chennai Metro</h3>
+        <p>Select a station to discover experiences nearby</p>
+      </div>
+      <span class="metro-arrow">→</span>
+    </div>
+  </div>
+</div>
+

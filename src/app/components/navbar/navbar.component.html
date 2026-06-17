@@ -1,0 +1,28 @@
+<nav class="navbar" *ngIf="currentUser">
+  <div class="navbar-brand" routerLink="/dashboard">
+    🗺️ Explore Together
+  </div>
+
+  <div class="navbar-links">
+    <a routerLink="/dashboard" [class.active]="isActive('/dashboard')">
+      🏠 Home
+    </a>
+    <a routerLink="/experiences" [class.active]="isActive('/experiences')">
+      ✨ Experiences
+    </a>
+    <a routerLink="/metro-explorer" [class.active]="isActive('/metro-explorer')">
+      🚇 Metro
+    </a>
+    <a routerLink="/saved" [class.active]="isActive('/saved')">
+      🔖 Saved
+    </a>
+    <a routerLink="/profile" [class.active]="isActive('/profile')">
+      👤 Profile
+    </a>
+  </div>
+
+  <div class="navbar-user">
+    <span>Hi, {{ currentUser?.name }}!</span>
+    <button (click)="logout()">Logout</button>
+  </div>
+</nav>

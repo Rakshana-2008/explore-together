@@ -1,0 +1,95 @@
+<div class="experiences-wrapper">
+  <div class="page-header">
+    <h1>Explore Experiences</h1>
+    <p>Discover real places near you in Chennai</p>
+  </div>
+
+  <div class="filters-card">
+    <div class="filter-group">
+      <label>Category</label>
+      <div class="filter-options">
+        <button
+          *ngFor="let cat of categories"
+          [class.selected]="selectedCategory === cat"
+          (click)="selectedCategory = cat">
+          {{ cat }}
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>Budget</label>
+        <div class="filter-options">
+          <button
+            *ngFor="let budget of budgets"
+            [class.selected]="selectedBudget === budget"
+            (click)="selectedBudget = budget">
+            {{ budget }}
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Distance</label>
+        <div class="filter-options">
+          <button
+            *ngFor="let r of radii"
+            [class.selected]="selectedRadius === r.value"
+            (click)="selectedRadius = r.value">
+            {{ r.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button class="search-btn" (click)="searchExperiences()" [disabled]="loading">
+      {{ loading ? 'Searching...' : '🔍 Find Experiences Near Me' }}
+    </button>
+  </div>
+
+  <div class="error-state" *ngIf="locationError">
+    <p>📍 Location access denied. Please enable location in your browser and refresh.</p>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Finding experiences near you...</p>
+  </div>
+
+  <div class="results-section" *ngIf="!loading && filtersApplied">
+    <h2>{{ experiences.length }} experiences found near you</h2>
+
+    <div class="empty-state" *ngIf="experiences.length === 0">
+      <p>😕 No experiences found. Try a different category or increase the distance.</p>
+    </div>
+
+    <div class="experiences-grid">
+      <div class="experience-card" *ngFor="let exp of experiences" (click)="goToDetails(exp)">
+        <div class="card-image" [style.background-image]="exp.photo ? 'url(' + exp.photo + ')' : ''">
+          <div class="no-image" *ngIf="!exp.photo">📍</div>
+          <button class="save-btn" (click)="$event.stopPropagation(); toggleSave(exp)" [class.saved]="isSaved(exp.placeId)">
+            {{ isSaved(exp.placeId) ? '🔖' : '➕' }}
+          </button>
+          <div class="open-badge" *ngIf="exp.isOpen === true">Open Now</div>
+          <div class="closed-badge" *ngIf="exp.isOpen === false">Closed</div>
+        </div>
+        <div class="card-content">
+          <h3>{{ exp.name }}</h3>
+          <p class="address">📍 {{ exp.address }}</p>
+          <div class="card-meta">
+            <span class="rating" *ngIf="exp.rating">⭐ {{ exp.rating }}</span>
+            <span class="price">{{ getPriceLabel(exp.priceLevel) }}</span>
+          </div>
+          <span class="category-tag">{{ exp.category }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="initial-state" *ngIf="!loading && !filtersApplied">
+    <div class="initial-icon">🗺️</div>
+    <h3>Pick a category to get started</h3>
+    <p>We'll use your location to find real experiences near you</p>
+  </div>
+</div>

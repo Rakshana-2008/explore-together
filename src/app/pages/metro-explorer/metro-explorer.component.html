@@ -1,0 +1,107 @@
+<div class="metro-wrapper">
+  <div class="page-header">
+    <h1>🚇 Explore by Chennai Metro</h1>
+    <p>Select a station to discover experiences nearby</p>
+    <div class="nearest-badge" *ngIf="nearestStation">
+      📍 You are nearest to <strong>{{ nearestStation.name }}</strong> ({{ nearestStation.line }} Line)
+    </div>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="category-filter">
+    <label>Filter by Category (optional)</label>
+    <div class="filter-options">
+      <button
+        [class.selected]="selectedCategory === ''"
+        (click)="selectedCategory = ''; loadExperiences()">
+        All
+      </button>
+      <button
+        *ngFor="let cat of categories"
+        [class.selected]="selectedCategory === cat"
+        (click)="selectedCategory = cat; loadExperiences()">
+        {{ cat }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Station Lines -->
+  <div class="lines-section">
+    <div class="line-group">
+      <div class="line-header green">
+        <span class="line-dot green-dot"></span>
+        <h2>Green Line</h2>
+      </div>
+      <div class="stations-grid">
+        <button
+          *ngFor="let station of greenLine"
+          class="station-btn"
+          [class.selected]="selectedStation === station.name"
+          [class.nearest]="nearestStation?.name === station.name"
+          (click)="selectStation(station.name)">
+          {{ station.name }}
+          <span class="nearest-tag" *ngIf="nearestStation?.name === station.name">📍 You</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="line-group">
+      <div class="line-header blue">
+        <span class="line-dot blue-dot"></span>
+        <h2>Blue Line</h2>
+      </div>
+      <div class="stations-grid">
+        <button
+          *ngFor="let station of blueLine"
+          class="station-btn"
+          [class.selected]="selectedStation === station.name"
+          [class.nearest]="nearestStation?.name === station.name"
+          (click)="selectStation(station.name)">
+          {{ station.name }}
+          <span class="nearest-tag" *ngIf="nearestStation?.name === station.name">📍 You</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-section" *ngIf="selectedStation">
+    <h2>{{ selectedStation }} — Nearby Experiences</h2>
+
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Finding experiences near {{ selectedStation }}...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && experiences.length === 0">
+      <p>😕 No experiences found near this station. Try a different category.</p>
+    </div>
+
+    <div class="experiences-grid" *ngIf="!loading && experiences.length > 0">
+      <div
+        class="experience-card"
+        *ngFor="let exp of experiences"
+        (click)="goToDetails(exp)">
+        <div class="card-image" [style.background-image]="exp.photo ? 'url(&quot;' + exp.photo + '&quot;)' : 'none'">
+          <div class="no-image" *ngIf="!exp.photo">📍</div>
+          <div class="open-badge" *ngIf="exp.isOpen === true">Open Now</div>
+        </div>
+        <div class="card-content">
+          <h3>{{ exp.name }}</h3>
+          <p class="address">📍 {{ exp.address }}</p>
+          <div class="card-meta">
+            <span class="rating" *ngIf="exp.rating">⭐ {{ exp.rating }}</span>
+            <span class="price">{{ getPriceLabel(exp.priceLevel) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Initial state -->
+  <div class="initial-state" *ngIf="!selectedStation">
+    <div class="initial-icon">🚇</div>
+    <h3>Select a station above</h3>
+    <p>We'll show you real experiences within 2km of that station</p>
+  </div>
+</div>
