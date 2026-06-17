@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class ExperienceService {
-  private apiUrl = 'http://localhost:5000/api/experiences';
+  private apiUrl = 'https://explore-together-production.up.railway.app/api/experiences';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

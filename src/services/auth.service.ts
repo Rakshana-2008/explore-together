@@ -7,7 +7,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth';
+  private apiUrl = 'https://explore-together-production.up.railway.app/api/auth';
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
