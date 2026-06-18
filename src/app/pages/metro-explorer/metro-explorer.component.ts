@@ -64,12 +64,10 @@ categories = [
   }
 
   selectStation(stationName: string) {
-    this.selectedStation = stationName;
-    this.experiences = [];
-    if (this.selectedCategory) {
-      this.loadExperiences();
-    }
-  }
+  this.selectedStation = stationName;
+  this.experiences = [];
+  this.loadExperiences();
+}
 
   loadExperiences() {
     if (!this.selectedStation) return;
