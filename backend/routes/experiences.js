@@ -2,72 +2,74 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
 
-const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
-
 const categoryMap = {
-  'Nature & Parks': 'park',
-  'Shopping': 'shopping_mall',
-  'Study & Work Spots': 'library',
-  'Entertainment': 'night_club',
-  'Spiritual & Heritage': 'hindu_temple',
-  'Adventure & Sports': 'stadium',
-  'Hotels': 'lodging',
-  'Restaurants (Veg)': 'restaurant',
-  'Restaurants (Non-Veg)': 'restaurant',
-  'Pharmacies': 'pharmacy',
-  'Hospitals': 'hospital',
-  'Cafes': 'cafe'
+  'Nature & Parks': '["leisure"="park"]',
+  'Shopping': '["shop"="mall"]',
+  'Study & Work Spots': '["amenity"="library"]',
+  'Entertainment': '["amenity"="cinema"]',
+  'Spiritual & Heritage': '["amenity"="place_of_worship"]',
+  'Adventure & Sports': '["leisure"="sports_centre"]',
+  'Hotels': '["tourism"="hotel"]',
+  'Restaurants (Veg)': '["amenity"="restaurant"]["diet:vegetarian"="yes"]',
+  'Restaurants (Non-Veg)': '["amenity"="restaurant"]',
+  'Pharmacies': '["amenity"="pharmacy"]',
+  'Hospitals': '["amenity"="hospital"]',
+  'Cafes': '["amenity"="cafe"]'
 };
 
-const getPhotoUrl = (photoName) => {
-  if (!photoName) return null;
-  return `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=400&key=${GOOGLE_API_KEY}`;
+const buildOverpassQuery = (tagFilter, lat, lng, radius) => {
+  return `[out:json][timeout:25];
+(
+  node${tagFilter}(around:${radius},${lat},${lng});
+  way${tagFilter}(around:${radius},${lat},${lng});
+);
+out center 30;`;
+};
+
+const queryOverpass = async (query) => {
+  const response = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: query
+  });
+  return response.json();
+};
+
+const mapOsmResults = (elements, category) => {
+  return elements
+    .filter(el => el.tags && el.tags.name)
+    .map(el => {
+      const lat = el.lat || el.center?.lat;
+      const lon = el.lon || el.center?.lon;
+      const addressParts = [
+        el.tags['addr:housenumber'],
+        el.tags['addr:street'],
+        el.tags['addr:suburb'] || el.tags['addr:neighbourhood'],
+        el.tags['addr:city'] || 'Chennai'
+      ].filter(Boolean);
+
+      return {
+        placeId: `osm-${el.type}-${el.id}`,
+        name: el.tags.name,
+        address: addressParts.length > 0 ? addressParts.join(', ') : 'Chennai, Tamil Nadu',
+        rating: null,
+        priceLevel: 0,
+        photo: null,
+        location: { latitude: lat, longitude: lon },
+        isOpen: null,
+        category
+      };
+    });
 };
 
 router.get('/nearby', protect, async (req, res) => {
-  const { lat, lng, category, radius = 5000, budget } = req.query;
+  const { lat, lng, category, radius = 5000 } = req.query;
   try {
-    const placeType = categoryMap[category] || 'tourist_attraction';
-    const body = {
-      includedTypes: [placeType],
-      maxResultCount: 20,
-      locationRestriction: {
-        circle: {
-          center: { latitude: parseFloat(lat), longitude: parseFloat(lng) },
-          radius: parseFloat(radius)
-        }
-      }
-    };
-    const response = await fetch('https://places.googleapis.com/v1/places:searchNearby', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': GOOGLE_API_KEY,
-        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.priceLevel,places.photos.name,places.location,places.regularOpeningHours'
-      },
-      body: JSON.stringify(body)
-    });
-    const data = await response.json();
-    if (!data.places) return res.json([]);
-    const budgetFilter = { 'Free': 0, 'Under ₹200': 1, '₹200–₹500': 2, '₹500–₹1000': 3, '₹1000+': 4 };
-    let places = data.places;
-    if (budget && budgetFilter[budget] !== undefined) {
-      places = places.filter(p => {
-        if (budget === 'Free') return !p.priceLevel || p.priceLevel === 0;
-        return p.priceLevel <= budgetFilter[budget];
-      });
-    }
-    const results = places.map(place => ({
-      placeId: place.id,
-      name: place.displayName?.text || 'Unknown',
-      address: place.formattedAddress || '',
-      rating: place.rating || null,
-      priceLevel: place.priceLevel || 0,
-      photo: place.photos?.[0]?.name ? getPhotoUrl(place.photos[0].name) : null,
-      location: place.location,
-      isOpen: place.regularOpeningHours?.openNow || null,
-      category
-    }));
+    const tagFilter = categoryMap[category] || '["tourism"="attraction"]';
+    const query = buildOverpassQuery(tagFilter, lat, lng, radius);
+    const data = await queryOverpass(query);
+    if (!data.elements) return res.json([]);
+    const results = mapOsmResults(data.elements, category);
     res.json(results);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -77,6 +79,7 @@ router.get('/nearby', protect, async (req, res) => {
 router.get('/station/:stationName', protect, async (req, res) => {
   const { stationName } = req.params;
   const { category } = req.query;
+
   const stationCoords = {
     'Chennai Central': { lat: 13.0827, lng: 80.2707 },
     'Egmore': { lat: 13.0732, lng: 80.2609 },
@@ -120,41 +123,15 @@ router.get('/station/:stationName', protect, async (req, res) => {
     'Meenambakkam': { lat: 12.9824, lng: 80.1983 },
     'Airport': { lat: 12.9824, lng: 80.1769 }
   };
+
   try {
     const coords = stationCoords[stationName];
     if (!coords) return res.status(404).json({ message: 'Station not found' });
-    const placeType = category ? categoryMap[category] : 'tourist_attraction';
-    const body = {
-      includedTypes: [placeType],
-      maxResultCount: 20,
-      locationRestriction: {
-        circle: {
-          center: { latitude: coords.lat, longitude: coords.lng },
-          radius: 2000
-        }
-      }
-    };
-    const response = await fetch('https://places.googleapis.com/v1/places:searchNearby', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': GOOGLE_API_KEY,
-        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.priceLevel,places.photos.name,places.location'
-      },
-      body: JSON.stringify(body)
-    });
-    const data = await response.json();
-    if (!data.places) return res.json([]);
-    const results = data.places.map(place => ({
-      placeId: place.id,
-      name: place.displayName?.text || 'Unknown',
-      address: place.formattedAddress || '',
-      rating: place.rating || null,
-      priceLevel: place.priceLevel || 0,
-      photo: place.photos?.[0]?.name ? getPhotoUrl(place.photos[0].name) : null,
-      location: place.location,
-      category: category || 'General'
-    }));
+    const tagFilter = category ? (categoryMap[category] || '["tourism"="attraction"]') : '["tourism"="attraction"]';
+    const query = buildOverpassQuery(tagFilter, coords.lat, coords.lng, 2000);
+    const data = await queryOverpass(query);
+    if (!data.elements) return res.json([]);
+    const results = mapOsmResults(data.elements, category || 'General');
     res.json(results);
   } catch (error) {
     res.status(500).json({ message: error.message });
