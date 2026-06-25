@@ -38,8 +38,7 @@ const categoryPhotos = {
 const getUnsplashPhoto = async (category) => {
   try {
     const query = categoryPhotos[category] || 'chennai india';
-    const response = await fetch(
-      `https://api.unsplash.com/photos/random?query=${encodeURIComponent(query)}&orientation=landscape`,
+    const response = await fetch('https://overpass.kumi.systems/api/interpreter', 
       {
         headers: {
           'Authorization': `Client-ID ${UNSPLASH_KEY}`
@@ -63,7 +62,7 @@ out center 30;`;
 };
 
 const queryOverpass = async (query) => {
-  const response = await fetch('https://overpass-api.de/api/interpreter', {
+  const response = await fetch('https://overpass.kumi.systems/api/interpreter', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: query
