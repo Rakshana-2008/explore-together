@@ -2,19 +2,55 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
 
+const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY;
+
 const categoryMap = {
-  'Nature & Parks': '[\"leisure\"=\"park\"]',
-  'Shopping': '[\"shop\"=\"mall\"]',
-  'Study & Work Spots': '[\"amenity\"=\"library\"]',
-  'Entertainment': '[\"amenity\"=\"cinema\"]',
-  'Spiritual & Heritage': '[\"amenity\"=\"place_of_worship\"]',
-  'Adventure & Sports': '[\"leisure\"=\"sports_centre\"]',
-  'Hotels': '[\"tourism\"=\"hotel\"]',
-  'Restaurants (Veg)': '[\"amenity\"=\"restaurant\"][\"diet:vegetarian\"=\"yes\"]',
-  'Restaurants (Non-Veg)': '[\"amenity\"=\"restaurant\"]',
-  'Pharmacies': '[\"amenity\"=\"pharmacy\"]',
-  'Hospitals': '[\"amenity\"=\"hospital\"]',
-  'Cafes': '[\"amenity\"=\"cafe\"]'
+  'Nature & Parks': '["leisure"="park"]',
+  'Shopping': '["shop"="mall"]',
+  'Study & Work Spots': '["amenity"="library"]',
+  'Entertainment': '["amenity"="cinema"]',
+  'Spiritual & Heritage': '["amenity"="place_of_worship"]',
+  'Adventure & Sports': '["leisure"="sports_centre"]',
+  'Hotels': '["tourism"="hotel"]',
+  'Restaurants (Veg)': '["amenity"="restaurant"]',
+  'Restaurants (Non-Veg)': '["amenity"="restaurant"]',
+  'Pharmacies': '["amenity"="pharmacy"]',
+  'Hospitals': '["amenity"="hospital"]',
+  'Cafes': '["amenity"="cafe"]'
+};
+
+const categoryPhotos = {
+  'Nature & Parks': 'park nature green',
+  'Shopping': 'shopping mall retail',
+  'Study & Work Spots': 'library study cafe',
+  'Entertainment': 'cinema entertainment',
+  'Spiritual & Heritage': 'temple heritage india',
+  'Adventure & Sports': 'sports adventure',
+  'Hotels': 'hotel lobby',
+  'Restaurants (Veg)': 'vegetarian food indian',
+  'Restaurants (Non-Veg)': 'restaurant food',
+  'Pharmacies': 'pharmacy medicine',
+  'Hospitals': 'hospital medical',
+  'Cafes': 'cafe coffee',
+  'General': 'chennai india'
+};
+
+const getUnsplashPhoto = async (category) => {
+  try {
+    const query = categoryPhotos[category] || 'chennai india';
+    const response = await fetch(
+      `https://api.unsplash.com/photos/random?query=${encodeURIComponent(query)}&orientation=landscape`,
+      {
+        headers: {
+          'Authorization': `Client-ID ${UNSPLASH_KEY}`
+        }
+      }
+    );
+    const data = await response.json();
+    return data.urls?.regular || null;
+  } catch (e) {
+    return null;
+  }
 };
 
 const buildOverpassQuery = (tagFilter, lat, lng, radius) => {
@@ -26,57 +62,18 @@ const buildOverpassQuery = (tagFilter, lat, lng, radius) => {
 out center 30;`;
 };
 
-// Try two Overpass mirrors in sequence
-const OVERPASS_MIRRORS = [
-  'https://overpass-api.de/api/interpreter',
-  'https://overpass.kumi.systems/api/interpreter'
-];
-
 const queryOverpass = async (query) => {
-  let lastError = null;
-
-  for (const mirror of OVERPASS_MIRRORS) {
-    try {
-      console.log(`[Overpass] Trying mirror: ${mirror}`);
-      const response = await fetch(mirror, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain',
-          'User-Agent': 'ExploreTogetherApp/1.0 (Chennai discovery app, student project)'
-        },
-        body: query,
-        signal: AbortSignal.timeout(20000) // 20s timeout per mirror
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        console.error(`[Overpass] Mirror ${mirror} responded with HTTP ${response.status}: ${text.slice(0, 200)}`);
-        lastError = new Error(`HTTP ${response.status}`);
-        continue; // try next mirror
-      }
-
-      const data = await response.json();
-
-      if (!data.elements) {
-        console.error(`[Overpass] Mirror ${mirror} returned no elements field. Full response:`, JSON.stringify(data).slice(0, 300));
-        lastError = new Error('No elements field in response');
-        continue;
-      }
-
-      console.log(`[Overpass] Success from ${mirror} — ${data.elements.length} elements`);
-      return data;
-
-    } catch (err) {
-      console.error(`[Overpass] Mirror ${mirror} threw error:`, err.message);
-      lastError = err;
-    }
-  }
-
-  // All mirrors failed
-  throw lastError || new Error('All Overpass mirrors failed');
+  const response = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: query
+  });
+  return response.json();
 };
 
-const mapOsmResults = (elements, category) => {
+const mapOsmResults = async (elements, category) => {
+  const photo = await getUnsplashPhoto(category);
+  
   return elements
     .filter(el => el.tags && el.tags.name)
     .map(el => {
@@ -95,7 +92,7 @@ const mapOsmResults = (elements, category) => {
         address: addressParts.length > 0 ? addressParts.join(', ') : 'Chennai, Tamil Nadu',
         rating: null,
         priceLevel: 0,
-        photo: null,
+        photo: photo,
         location: { latitude: lat, longitude: lon },
         isOpen: null,
         category
@@ -105,16 +102,14 @@ const mapOsmResults = (elements, category) => {
 
 router.get('/nearby', protect, async (req, res) => {
   const { lat, lng, category, radius = 5000 } = req.query;
-  console.log(`[/nearby] lat=${lat} lng=${lng} category=${category} radius=${radius}`);
   try {
-    const tagFilter = categoryMap[category] || '[\"tourism\"=\"attraction\"]';
+    const tagFilter = categoryMap[category] || '["tourism"="attraction"]';
     const query = buildOverpassQuery(tagFilter, lat, lng, radius);
     const data = await queryOverpass(query);
-    const results = mapOsmResults(data.elements, category);
-    console.log(`[/nearby] Returning ${results.length} named results`);
+    if (!data.elements) return res.json([]);
+    const results = await mapOsmResults(data.elements, category);
     res.json(results);
   } catch (error) {
-    console.error('[/nearby] Final error:', error.message);
     res.status(500).json({ message: error.message });
   }
 });
@@ -122,7 +117,6 @@ router.get('/nearby', protect, async (req, res) => {
 router.get('/station/:stationName', protect, async (req, res) => {
   const { stationName } = req.params;
   const { category } = req.query;
-  console.log(`[/station] stationName=${stationName} category=${category}`);
 
   const stationCoords = {
     'Chennai Central': { lat: 13.0827, lng: 80.2707 },
@@ -171,15 +165,13 @@ router.get('/station/:stationName', protect, async (req, res) => {
   try {
     const coords = stationCoords[stationName];
     if (!coords) return res.status(404).json({ message: 'Station not found' });
-
-    const tagFilter = category ? (categoryMap[category] || '[\"tourism\"=\"attraction\"]') : '[\"tourism\"=\"attraction\"]';
+    const tagFilter = category ? (categoryMap[category] || '["tourism"="attraction"]') : '["amenity"="restaurant"]';
     const query = buildOverpassQuery(tagFilter, coords.lat, coords.lng, 2000);
     const data = await queryOverpass(query);
-    const results = mapOsmResults(data.elements, category || 'General');
-    console.log(`[/station] Returning ${results.length} named results`);
+    if (!data.elements) return res.json([]);
+    const results = await mapOsmResults(data.elements, category || 'General');
     res.json(results);
   } catch (error) {
-    console.error('[/station] Final error:', error.message);
     res.status(500).json({ message: error.message });
   }
 });
