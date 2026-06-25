@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
 
-const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY;
-
 const categoryMap = {
   'Nature & Parks': '["leisure"="park"]',
   'Shopping': '["shop"="mall"]',
@@ -17,39 +15,6 @@ const categoryMap = {
   'Pharmacies': '["amenity"="pharmacy"]',
   'Hospitals': '["amenity"="hospital"]',
   'Cafes': '["amenity"="cafe"]'
-};
-
-const categoryPhotos = {
-  'Nature & Parks': 'park nature green',
-  'Shopping': 'shopping mall retail',
-  'Study & Work Spots': 'library study cafe',
-  'Entertainment': 'cinema entertainment',
-  'Spiritual & Heritage': 'temple heritage india',
-  'Adventure & Sports': 'sports adventure',
-  'Hotels': 'hotel lobby',
-  'Restaurants (Veg)': 'vegetarian food indian',
-  'Restaurants (Non-Veg)': 'restaurant food',
-  'Pharmacies': 'pharmacy medicine',
-  'Hospitals': 'hospital medical',
-  'Cafes': 'cafe coffee',
-  'General': 'chennai india'
-};
-
-const getUnsplashPhoto = async (category) => {
-  try {
-    const query = categoryPhotos[category] || 'chennai india';
-    const response = await fetch('https://overpass.kumi.systems/api/interpreter', 
-      {
-        headers: {
-          'Authorization': `Client-ID ${UNSPLASH_KEY}`
-        }
-      }
-    );
-    const data = await response.json();
-    return data.urls?.regular || null;
-  } catch (e) {
-    return null;
-  }
 };
 
 const buildOverpassQuery = (tagFilter, lat, lng, radius) => {
@@ -70,9 +35,7 @@ const queryOverpass = async (query) => {
   return response.json();
 };
 
-const mapOsmResults = async (elements, category) => {
-  const photo = await getUnsplashPhoto(category);
-  
+const mapOsmResults = (elements, category) => {
   return elements
     .filter(el => el.tags && el.tags.name)
     .map(el => {
@@ -91,7 +54,7 @@ const mapOsmResults = async (elements, category) => {
         address: addressParts.length > 0 ? addressParts.join(', ') : 'Chennai, Tamil Nadu',
         rating: null,
         priceLevel: 0,
-        photo: photo,
+        photo: null,
         location: { latitude: lat, longitude: lon },
         isOpen: null,
         category
@@ -106,7 +69,7 @@ router.get('/nearby', protect, async (req, res) => {
     const query = buildOverpassQuery(tagFilter, lat, lng, radius);
     const data = await queryOverpass(query);
     if (!data.elements) return res.json([]);
-    const results = await mapOsmResults(data.elements, category);
+    const results = mapOsmResults(data.elements, category);
     res.json(results);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -168,7 +131,7 @@ router.get('/station/:stationName', protect, async (req, res) => {
     const query = buildOverpassQuery(tagFilter, coords.lat, coords.lng, 2000);
     const data = await queryOverpass(query);
     if (!data.elements) return res.json([]);
-    const results = await mapOsmResults(data.elements, category || 'General');
+    const results = mapOsmResults(data.elements, category || 'General');
     res.json(results);
   } catch (error) {
     res.status(500).json({ message: error.message });
