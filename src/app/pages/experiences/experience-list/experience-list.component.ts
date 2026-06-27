@@ -20,20 +20,20 @@ export class ExperienceListComponent implements OnInit {
   filtersApplied = false;
   savedPlaceIds: string[] = [];
 
- categories = [
-  'Nature & Parks',
-  'Shopping',
-  'Study & Work Spots',
-  'Entertainment',
-  'Spiritual & Heritage',
-  'Adventure & Sports',
-  'Hotels',
-  'Restaurants (Veg)',
-  'Restaurants (Non-Veg)',
-  'Pharmacies',
-  'Hospitals',
-  'Cafes'
-];
+  categories = [
+    'Nature & Parks',
+    'Shopping',
+    'Study & Work Spots',
+    'Entertainment',
+    'Spiritual & Heritage',
+    'Adventure & Sports',
+    'Hotels',
+    'Restaurants (Veg)',
+    'Restaurants (Non-Veg)',
+    'Pharmacies',
+    'Hospitals',
+    'Cafes'
+  ];
 
   budgets = ['Free', 'Under ₹200', '₹200–₹500', '₹500–₹1000', '₹1000+'];
   radii = [
@@ -157,5 +157,23 @@ export class ExperienceListComponent implements OnInit {
       4: 'Very Expensive (₹₹₹₹)'
     };
     return labels[level] || 'Price varies';
+  }
+
+  getCategoryEmoji(category: string): string {
+    const emojis: { [key: string]: string } = {
+      'Nature & Parks': '🌿',
+      'Shopping': '🛍️',
+      'Study & Work Spots': '📚',
+      'Entertainment': '🎭',
+      'Spiritual & Heritage': '🕌',
+      'Adventure & Sports': '⚡',
+      'Hotels': '🏨',
+      'Restaurants (Veg)': '🥗',
+      'Restaurants (Non-Veg)': '🍖',
+      'Pharmacies': '💊',
+      'Hospitals': '🏥',
+      'Cafes': '☕'
+    };
+    return emojis[category] || '📍';
   }
 }

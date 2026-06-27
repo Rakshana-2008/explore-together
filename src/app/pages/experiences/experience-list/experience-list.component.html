@@ -66,13 +66,12 @@
 
     <div class="experiences-grid">
       <div class="experience-card" *ngFor="let exp of experiences" (click)="goToDetails(exp)">
-        <div class="card-image" [style.background-image]="exp.photo ? 'url(' + exp.photo + ')' : ''">
-          <div class="no-image" *ngIf="!exp.photo">📍</div>
+        <div class="card-image" [class.no-photo]="!exp.photo"
+          [style.background-image]="exp.photo ? 'url(' + exp.photo + ')' : ''">
+          <div class="no-image" *ngIf="!exp.photo">{{ getCategoryEmoji(exp.category) }}</div>
           <button class="save-btn" (click)="$event.stopPropagation(); toggleSave(exp)" [class.saved]="isSaved(exp.placeId)">
             {{ isSaved(exp.placeId) ? '🔖' : '➕' }}
           </button>
-          <div class="open-badge" *ngIf="exp.isOpen === true">Open Now</div>
-          <div class="closed-badge" *ngIf="exp.isOpen === false">Closed</div>
         </div>
         <div class="card-content">
           <h3>{{ exp.name }}</h3>
