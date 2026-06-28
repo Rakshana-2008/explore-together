@@ -63,9 +63,29 @@ export class ExperienceDetailsComponent implements OnInit {
     return labels[level] || 'Price varies';
   }
 
+  getCategoryEmoji(category: string): string {
+    const emojis: { [key: string]: string } = {
+      'Nature & Parks': '🌿',
+      'Shopping': '🛍️',
+      'Study & Work Spots': '📚',
+      'Entertainment': '🎭',
+      'Spiritual & Heritage': '🕌',
+      'Adventure & Sports': '⚡',
+      'Hotels': '🏨',
+      'Restaurants (Veg)': '🥗',
+      'Restaurants (Non-Veg)': '🍖',
+      'Pharmacies': '💊',
+      'Hospitals': '🏥',
+      'Cafes': '☕'
+    };
+    return emojis[category] || '📍';
+  }
+
   openInMaps() {
     if (this.experience.location) {
-      const url = `https://www.google.com/maps/search/?api=1&query=${this.experience.location.latitude},${this.experience.location.longitude}`;
+      const lat = this.experience.location.latitude || this.experience.location.lat;
+      const lng = this.experience.location.longitude || this.experience.location.lng;
+      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
       window.open(url, '_blank');
     }
   }

@@ -2,9 +2,12 @@
   <button class="back-btn" (click)="goBack()">← Back</button>
 
   <div class="details-card">
-    <div class="details-image"
-  [style.background-image]="experience.photo ? 'url(&quot;' + experience.photo + '&quot;)' : 'none'">
-      <div class="no-image" *ngIf="!experience.photo">📍</div>
+    <div class="details-image" [class.no-photo]="!experience.photo"
+      [style.background-image]="experience.photo ? 'url(' + experience.photo + ')' : ''">
+      <div class="no-image" *ngIf="!experience.photo">
+        <span class="emoji-placeholder">{{ getCategoryEmoji(experience.category) }}</span>
+        <p>{{ experience.name }}</p>
+      </div>
       <div class="open-badge" *ngIf="experience.isOpen === true">Open Now</div>
       <div class="closed-badge" *ngIf="experience.isOpen === false">Closed</div>
     </div>
@@ -44,6 +47,14 @@
             <span class="meta-value" [class.open]="experience.isOpen" [class.closed]="!experience.isOpen">
               {{ experience.isOpen ? 'Open Now' : 'Closed' }}
             </span>
+          </div>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-icon">📂</span>
+          <div>
+            <span class="meta-label">Category</span>
+            <span class="meta-value">{{ experience.category }}</span>
           </div>
         </div>
       </div>
