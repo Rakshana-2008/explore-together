@@ -2,54 +2,50 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 40px;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(16px);
+  padding: 0 40px;
+  height: 64px;
+  background: #5a5f6b;
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
 
   .navbar-brand {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 800;
-    color: #1a1a2e;
+    color: white;
     cursor: pointer;
     transition: all 0.2s;
+    letter-spacing: 0.3px;
 
     &:hover {
       color: #2ec4b6;
-      transform: scale(1.02);
     }
   }
 
   .navbar-links {
     display: flex;
-    gap: 8px;
+    gap: 4px;
 
     a {
       text-decoration: none;
-      color: #1a1a2e;
-      font-weight: 600;
-      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+      font-size: 0.9rem;
       padding: 8px 16px;
-      border-radius: 20px;
+      border-radius: 8px;
       transition: all 0.2s;
-      border: 2px solid transparent;
+      border: 1px solid transparent;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.5);
-        border-color: rgba(46, 196, 182, 0.3);
-        color: #2ec4b6;
-        transform: translateY(-2px);
+        color: white;
+        background: rgba(255, 255, 255, 0.08);
       }
 
       &.active {
-        background: rgba(255, 255, 255, 0.7);
-        border-color: rgba(46, 196, 182, 0.4);
         color: #2ec4b6;
-        box-shadow: 0 0 12px rgba(46, 196, 182, 0.2);
+        background: rgba(46, 196, 182, 0.1);
+        border-color: rgba(46, 196, 182, 0.3);
       }
     }
   }
@@ -60,23 +56,25 @@
     gap: 16px;
 
     span {
-      font-weight: 600;
-      color: #1a1a2e;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
     }
 
     button {
-      padding: 8px 20px;
-      background: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 20px;
+      padding: 7px 18px;
+      background: transparent;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+      border-radius: 8px;
       font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s;
 
       &:hover {
-        background: #c0392b;
-        transform: translateY(-2px);
+        background: #e74c3c;
+        color: white;
         box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
       }
     }

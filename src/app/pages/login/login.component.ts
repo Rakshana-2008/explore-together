@@ -19,7 +19,11 @@ export class LoginComponent {
   errorMessage = '';
   loading = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
 
   onLogin() {
     if (!this.email || !this.password) {
