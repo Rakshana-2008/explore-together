@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
 import { AuthService } from './auth.service';
 
@@ -113,21 +113,42 @@ out center 30;`;
       });
   }
 
+  private async queryOverpass(query: string): Promise<any[]> {
+    const mirrors = [
+      'https://overpass-api.de/api/interpreter',
+      'https://overpass.kumi.systems/api/interpreter',
+      'https://overpass.private.coffee/api/interpreter'
+    ];
+
+    for (const mirror of mirrors) {
+      try {
+        const response = await fetch(mirror, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain',
+            'Accept': '*/*',
+            'User-Agent': 'ExploreTogether/1.0 (Chennai experience discovery app)'
+          },
+          body: query
+        });
+
+        if (!response.ok) continue;
+
+        const data = await response.json();
+        if (data.elements) return data.elements;
+      } catch (e) {
+        continue;
+      }
+    }
+    return [];
+  }
+
   getNearbyExperiences(lat: number, lng: number, category: string, radius: number, budget?: string): Observable<any> {
     const tagFilter = this.categoryMap[category] || '["tourism"="attraction"]';
     const query = this.buildQuery(tagFilter, lat, lng, radius);
 
     return from(
-      fetch(this.overpassUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: query
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (!data.elements) return [];
-        return this.mapResults(data.elements, category);
-      })
+      this.queryOverpass(query).then(elements => this.mapResults(elements, category))
     );
   }
 
@@ -141,16 +162,7 @@ out center 30;`;
     const query = this.buildQuery(tagFilter, coords.lat, coords.lng, 2000);
 
     return from(
-      fetch(this.overpassUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: query
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (!data.elements) return [];
-        return this.mapResults(data.elements, category || 'General');
-      })
+      this.queryOverpass(query).then(elements => this.mapResults(elements, category || 'General'))
     );
   }
 }
