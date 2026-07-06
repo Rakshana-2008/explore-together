@@ -42,17 +42,19 @@ categories = [
     this.detectLocation();
   }
 
-  detectLocation() {
-    this.locationService.getCurrentLocation().subscribe({
-      next: (coords) => {
-        this.nearestStation = this.locationService.getNearestStation(coords);
-        this.locationLoading = false;
-      },
-      error: () => {
-        this.locationLoading = false;
-      }
-    });
-  }
+detectLocation() {
+  this.locationService.getCurrentLocation().subscribe({
+    next: (coords) => {
+      console.log('Your coords:', coords);
+      this.nearestStation = this.locationService.getNearestStation(coords);
+      console.log('Nearest station:', this.nearestStation);
+      this.locationLoading = false;
+    },
+    error: () => {
+      this.locationLoading = false;
+    }
+  });
+}
 
   goToCategory(filter: string) {
     this.router.navigate(['/experiences'], { queryParams: { category: filter } });

@@ -83,3 +83,28 @@ body {
     margin-bottom: 8px;
   }
 }
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .page-wrapper {
+    padding: 20px;
+  }
+
+  .experiences-grid,
+  .saved-grid,
+  .categories-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero-section {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .details-meta {
+    flex-direction: column;
+  }
+}
