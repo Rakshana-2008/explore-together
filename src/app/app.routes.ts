@@ -4,7 +4,11 @@ import { RegisterComponent } from './pages/register/register.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/landing/landing.component').then(m => m.LandingComponent)
+  },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
@@ -43,5 +47,5 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/profile/profile.component').then(m => m.ProfileComponent)
   },
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: '' }
 ];

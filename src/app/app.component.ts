@@ -13,7 +13,7 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   title = 'explore-together';
-  showNavbar = true;
+  showNavbar = false;
 
   constructor(private router: Router) {}
 
@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      const hideOnRoutes = ['/login', '/register'];
+      const hideOnRoutes = ['/', '/login', '/register'];
       this.showNavbar = !hideOnRoutes.includes(event.urlAfterRedirects);
     });
   }

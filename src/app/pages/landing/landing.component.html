@@ -1,0 +1,126 @@
+<div class="landing-wrapper">
+
+  <!-- Navbar -->
+  <nav class="landing-nav">
+    <div class="nav-brand">🗺️ Explore Together</div>
+    <div class="nav-actions">
+      <button class="btn-ghost" (click)="goToLogin()">Login</button>
+      <button class="btn-primary" (click)="goToRegister()">Sign Up</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🌟 Chennai's Experience Discovery App</div>
+      <h1>
+        Explore Chennai
+        <span class="highlight">Like Never Before</span>
+      </h1>
+      <p>Discover cafes, parks, hospitals, hotels and more — all powered by your GPS location and Chennai's Metro network.</p>
+      <div class="hero-actions">
+        <button class="btn-hero-primary" (click)="goToRegister()">
+          Get Started Free →
+        </button>
+        <button class="btn-hero-ghost" (click)="goToLogin()">
+          Already have an account?
+        </button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="mock-navbar">🗺️ Explore Together</div>
+          <div class="mock-greeting">Welcome back! 👋</div>
+          <div class="mock-station">
+            <span>📍 Nearest Station</span>
+            <strong>Thousand Lights</strong>
+            <span class="mock-line">Blue Line</span>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">☕ Cafes</div>
+            <div class="mock-card">🌿 Parks</div>
+            <div class="mock-card">🏥 Hospitals</div>
+            <div class="mock-card">🛍️ Shopping</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat-item" *ngFor="let stat of stats">
+        <div class="stat-number">{{ stat.number }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="features-header">
+      <h2>Everything You Need to Explore Chennai</h2>
+      <p>Powerful features designed for Chennai locals and visitors alike</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-icon">{{ feature.icon }}</div>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Metro Section -->
+  <section class="metro-showcase">
+    <div class="metro-content">
+      <div class="metro-text">
+        <h2>Powered by Chennai Metro</h2>
+        <p>Click any station on the Green or Blue line and instantly discover what's around it — restaurants, parks, shops, hospitals and more within 2km.</p>
+        <button class="btn-hero-primary" (click)="goToRegister()">
+          Try Metro Explorer →
+        </button>
+      </div>
+      <div class="metro-visual">
+        <div class="metro-line green-line">
+          <div class="line-label">🟢 Green Line</div>
+          <div class="station-pills">
+            <span>Chennai Central</span>
+            <span>Egmore</span>
+            <span>Kilpauk</span>
+            <span>Anna Nagar</span>
+            <span>Koyambedu</span>
+          </div>
+        </div>
+        <div class="metro-line blue-line">
+          <div class="line-label">🔵 Blue Line</div>
+          <div class="station-pills">
+            <span>Wimco Nagar</span>
+            <span>Tondiarpet</span>
+            <span>High Court</span>
+            <span>Thousand Lights</span>
+            <span>Guindy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <h2>Ready to Explore Chennai?</h2>
+    <p>Join thousands of Chennaites discovering new experiences every day</p>
+    <button class="btn-hero-primary large" (click)="goToRegister()">
+      Create Free Account →
+    </button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-brand">🗺️ Explore Together</div>
+    <p>Made with ❤️ for Chennai</p>
+  </footer>
+
+</div>
