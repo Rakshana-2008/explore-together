@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://explore-together-production.up.railway.app/api/users';
+  private apiUrl = 'https://explore-together-backend-hj7l.onrender.com';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

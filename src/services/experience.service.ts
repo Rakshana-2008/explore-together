@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class ExperienceService {
-  private apiUrl = 'https://explore-together-production.up.railway.app/api/experiences';
+  private apiUrl = 'https://explore-together-backend-hj7l.onrender.com';
   private overpassUrl = 'https://overpass-api.de/api/interpreter';
 
   private categoryMap: { [key: string]: string } = {
