@@ -7,7 +7,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://explore-together-backend-hj7l.onrender.com';
+  private apiUrl = 'https://explore-together-backend-hj7l.onrender.com/api/auth';
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
