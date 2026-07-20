@@ -1,126 +1,231 @@
 <div class="landing-wrapper">
 
+  <!-- Particles Background -->
+  <div class="particles">
+    <div class="particle" *ngFor="let p of particles" [style.left]="p.x + '%'" [style.top]="p.y + '%'" [style.animation-delay]="p.delay + 's'" [style.width]="p.size + 'px'" [style.height]="p.size + 'px'"></div>
+  </div>
+
   <!-- Navbar -->
-  <nav class="landing-nav">
-    <div class="nav-brand">🗺️ Explore Together</div>
+  <nav class="landing-nav" [class.scrolled]="isScrolled">
+    <div class="nav-brand">
+      <span class="brand-icon">🗺️</span>
+      <span>Explore Together</span>
+    </div>
     <div class="nav-actions">
       <button class="btn-ghost" (click)="goToLogin()">Login</button>
-      <button class="btn-primary" (click)="goToRegister()">Sign Up</button>
+      <button class="btn-primary" (click)="goToRegister()">
+        Get Started <span class="arrow">→</span>
+      </button>
     </div>
   </nav>
 
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-content">
-      <div class="hero-badge">🌟 Chennai's Experience Discovery App</div>
+    <div class="hero-content" [class.visible]="heroVisible">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        🌟 Chennai's #1 Experience Discovery App
+      </div>
       <h1>
-        Explore Chennai
-        <span class="highlight">Like Never Before</span>
+        Discover Chennai
+        <span class="highlight-text">Like Never</span>
+        <span class="highlight-text-2">Before</span>
       </h1>
-      <p>Discover cafes, parks, hospitals, hotels and more — all powered by your GPS location and Chennai's Metro network.</p>
+      <p>Find cafes, parks, hospitals, hotels and more — powered by your GPS and Chennai's Metro network. Real places, real experiences.</p>
       <div class="hero-actions">
-        <button class="btn-hero-primary" (click)="goToRegister()">
-          Get Started Free →
+        <button class="btn-cta" (click)="goToRegister()">
+          <span>Start Exploring Free</span>
+          <span class="btn-icon">🚀</span>
         </button>
         <button class="btn-hero-ghost" (click)="goToLogin()">
-          Already have an account?
+          Sign In
         </button>
       </div>
+      <div class="hero-trust">
+        <div class="trust-item">✅ No credit card needed</div>
+        <div class="trust-item">✅ Free forever</div>
+        <div class="trust-item">✅ Real Chennai data</div>
+      </div>
     </div>
-    <div class="hero-visual">
-      <div class="phone-mockup">
-        <div class="phone-screen">
-          <div class="mock-navbar">🗺️ Explore Together</div>
-          <div class="mock-greeting">Welcome back! 👋</div>
-          <div class="mock-station">
-            <span>📍 Nearest Station</span>
-            <strong>Thousand Lights</strong>
-            <span class="mock-line">Blue Line</span>
+
+    <div class="hero-visual" [class.visible]="heroVisible">
+      <div class="phone-container">
+        <div class="glow-ring ring-1"></div>
+        <div class="glow-ring ring-2"></div>
+        <div class="glow-ring ring-3"></div>
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="mock-navbar">🗺️ Explore Together</div>
+            <div class="mock-greeting">Welcome back! 👋</div>
+            <div class="mock-station">
+              <div class="mock-station-label">📍 Nearest Metro Station</div>
+              <div class="mock-station-name">Thousand Lights</div>
+              <div class="mock-station-line">🔵 Blue Line</div>
+            </div>
+            <div class="mock-search">🔍 What are you looking for?</div>
+            <div class="mock-cards">
+              <div class="mock-card animated-card" style="animation-delay: 0.1s">☕ Cafes</div>
+              <div class="mock-card animated-card" style="animation-delay: 0.2s">🌿 Parks</div>
+              <div class="mock-card animated-card" style="animation-delay: 0.3s">🏥 Hospitals</div>
+              <div class="mock-card animated-card" style="animation-delay: 0.4s">🛍️ Shopping</div>
+              <div class="mock-card animated-card" style="animation-delay: 0.5s">🏨 Hotels</div>
+              <div class="mock-card animated-card" style="animation-delay: 0.6s">🕌 Heritage</div>
+            </div>
           </div>
-          <div class="mock-cards">
-            <div class="mock-card">☕ Cafes</div>
-            <div class="mock-card">🌿 Parks</div>
-            <div class="mock-card">🏥 Hospitals</div>
-            <div class="mock-card">🛍️ Shopping</div>
-          </div>
+        </div>
+        <div class="floating-badge badge-1">
+          <span>📍</span> GPS Enabled
+        </div>
+        <div class="floating-badge badge-2">
+          <span>🚇</span> Metro Ready
+        </div>
+        <div class="floating-badge badge-3">
+          <span>⭐</span> Free Forever
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Marquee Section -->
+  <div class="marquee-wrapper">
+    <div class="marquee-track">
+      <span *ngFor="let item of marqueeItems" class="marquee-item">{{ item }}</span>
+      <span *ngFor="let item of marqueeItems" class="marquee-item">{{ item }}</span>
+    </div>
+  </div>
+
   <!-- Stats Section -->
-  <section class="stats">
+  <section class="stats" #statsSection>
     <div class="stats-grid">
-      <div class="stat-item" *ngFor="let stat of stats">
+      <div class="stat-card" *ngFor="let stat of stats; let i = index" [style.animation-delay]="i * 0.1 + 's'" [class.visible]="statsVisible">
+        <div class="stat-icon">{{ stat.icon }}</div>
         <div class="stat-number">{{ stat.number }}</div>
         <div class="stat-label">{{ stat.label }}</div>
       </div>
     </div>
   </section>
 
+  <!-- How It Works -->
+  <section class="how-it-works" #howSection>
+    <div class="section-header" [class.visible]="howVisible">
+      <div class="section-tag">⚡ Simple & Fast</div>
+      <h2>How It Works</h2>
+      <p>Get started in seconds, discover in minutes</p>
+    </div>
+    <div class="steps">
+      <div class="step" *ngFor="let step of steps; let i = index" [style.animation-delay]="i * 0.15 + 's'" [class.visible]="howVisible">
+        <div class="step-number">{{ i + 1 }}</div>
+        <div class="step-icon">{{ step.icon }}</div>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.description }}</p>
+        <div class="step-connector" *ngIf="i < steps.length - 1"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- Features Section -->
-  <section class="features">
-    <div class="features-header">
-      <h2>Everything You Need to Explore Chennai</h2>
-      <p>Powerful features designed for Chennai locals and visitors alike</p>
+  <section class="features" #featuresSection>
+    <div class="section-header" [class.visible]="featuresVisible">
+      <div class="section-tag">🎯 Features</div>
+      <h2>Everything You Need</h2>
+      <p>Powerful tools designed for Chennai explorers</p>
     </div>
     <div class="features-grid">
-      <div class="feature-card" *ngFor="let feature of features">
-        <div class="feature-icon">{{ feature.icon }}</div>
+      <div class="feature-card" *ngFor="let feature of features; let i = index" [style.animation-delay]="i * 0.1 + 's'" [class.visible]="featuresVisible" [style.--accent]="feature.color">
+        <div class="feature-icon-wrap" [style.background]="feature.bg">
+          <span class="feature-icon">{{ feature.icon }}</span>
+        </div>
         <h3>{{ feature.title }}</h3>
         <p>{{ feature.description }}</p>
+        <div class="feature-arrow">→</div>
       </div>
     </div>
   </section>
 
   <!-- Metro Section -->
-  <section class="metro-showcase">
-    <div class="metro-content">
+  <section class="metro-showcase" #metroSection>
+    <div class="metro-inner" [class.visible]="metroVisible">
       <div class="metro-text">
-        <h2>Powered by Chennai Metro</h2>
-        <p>Click any station on the Green or Blue line and instantly discover what's around it — restaurants, parks, shops, hospitals and more within 2km.</p>
-        <button class="btn-hero-primary" (click)="goToRegister()">
-          Try Metro Explorer →
+        <div class="section-tag light">🚇 Metro Explorer</div>
+        <h2>Explore by <span class="gradient-text">Chennai Metro</span></h2>
+        <p>Click any station across the Green or Blue line and instantly discover what's nearby — restaurants, parks, shops, hospitals and more within 2km radius.</p>
+        <div class="metro-features">
+          <div class="metro-feature">✅ Green Line — 17 stations</div>
+          <div class="metro-feature">✅ Blue Line — 28 stations</div>
+          <div class="metro-feature">✅ Real-time GPS detection</div>
+          <div class="metro-feature">✅ Nearest station auto-highlight</div>
+        </div>
+        <button class="btn-cta" (click)="goToRegister()">
+          <span>Try Metro Explorer</span>
+          <span class="btn-icon">🚇</span>
         </button>
       </div>
       <div class="metro-visual">
-        <div class="metro-line green-line">
-          <div class="line-label">🟢 Green Line</div>
+        <div class="metro-card">
+          <div class="metro-line-header green">
+            <span class="line-dot green-dot"></span>
+            Green Line
+          </div>
           <div class="station-pills">
-            <span>Chennai Central</span>
-            <span>Egmore</span>
-            <span>Kilpauk</span>
-            <span>Anna Nagar</span>
-            <span>Koyambedu</span>
+            <span *ngFor="let s of greenStations" class="station-pill" (click)="goToRegister()">{{ s }}</span>
           </div>
         </div>
-        <div class="metro-line blue-line">
-          <div class="line-label">🔵 Blue Line</div>
+        <div class="metro-card">
+          <div class="metro-line-header blue">
+            <span class="line-dot blue-dot"></span>
+            Blue Line
+          </div>
           <div class="station-pills">
-            <span>Wimco Nagar</span>
-            <span>Tondiarpet</span>
-            <span>High Court</span>
-            <span>Thousand Lights</span>
-            <span>Guindy</span>
+            <span *ngFor="let s of blueStations" class="station-pill" (click)="goToRegister()">{{ s }}</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Categories Section -->
+  <section class="categories-showcase" #categoriesSection>
+    <div class="section-header" [class.visible]="categoriesVisible">
+      <div class="section-tag">🗂️ Categories</div>
+      <h2>Find Anything in Chennai</h2>
+      <p>12 categories covering every experience you need</p>
+    </div>
+    <div class="categories-grid" [class.visible]="categoriesVisible">
+      <div class="category-pill" *ngFor="let cat of allCategories; let i = index" [style.animation-delay]="i * 0.05 + 's'" (click)="goToRegister()">
+        <span class="cat-icon">{{ cat.icon }}</span>
+        <span>{{ cat.name }}</span>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA Section -->
-  <section class="cta">
-    <h2>Ready to Explore Chennai?</h2>
-    <p>Join thousands of Chennaites discovering new experiences every day</p>
-    <button class="btn-hero-primary large" (click)="goToRegister()">
-      Create Free Account →
-    </button>
+  <section class="cta-section">
+    <div class="cta-inner">
+      <div class="cta-glow"></div>
+      <h2>Ready to Explore Chennai?</h2>
+      <p>Join Chennaites discovering new experiences every day</p>
+      <div class="cta-actions">
+        <button class="btn-cta large" (click)="goToRegister()">
+          <span>Create Free Account</span>
+          <span class="btn-icon">🚀</span>
+        </button>
+        <button class="btn-hero-ghost" (click)="goToLogin()">
+          Already have an account? Login →
+        </button>
+      </div>
+    </div>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
-    <div class="footer-brand">🗺️ Explore Together</div>
-    <p>Made with ❤️ for Chennai</p>
+    <div class="footer-top">
+      <div class="footer-brand">🗺️ Explore Together</div>
+      <p>Discover Chennai, one experience at a time</p>
+    </div>
+    <div class="footer-bottom">
+      <p>Made with ❤️ for Chennai &nbsp;|&nbsp; Built with Angular & Node.js</p>
+    </div>
   </footer>
 
 </div>
