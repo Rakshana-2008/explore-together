@@ -123,19 +123,25 @@ private async queryOverpass(query: string): Promise<any[]> {
 
   for (const endpoint of endpoints) {
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `data=${encodeURIComponent(query)}`
+        body: `data=${encodeURIComponent(query)}`,
+        signal: controller.signal
       });
+
+      clearTimeout(timeout);
 
       if (!response.ok) continue;
       const text = await response.text();
       if (text.includes('DOCTYPE') || text.includes('<html')) continue;
       const data = JSON.parse(text);
-      if (data.elements && data.elements.length >= 0) return data.elements;
+      if (data.elements) return data.elements;
     } catch (e) {
       continue;
     }
