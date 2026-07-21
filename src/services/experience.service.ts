@@ -113,35 +113,35 @@ out center 30;`;
       });
   }
 
-  private async queryOverpass(query: string): Promise<any[]> {
-    const mirrors = [
-      'https://overpass-api.de/api/interpreter',
-      'https://overpass.kumi.systems/api/interpreter',
-      'https://overpass.private.coffee/api/interpreter'
-    ];
+private async queryOverpass(query: string): Promise<any[]> {
+  const endpoints = [
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://overpass.private.coffee/api/interpreter',
+    'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+    'https://overpass-api.de/api/interpreter'
+  ];
 
-    for (const mirror of mirrors) {
-      try {
-        const response = await fetch(mirror, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain',
-            'Accept': '*/*',
-            'User-Agent': 'ExploreTogether/1.0 (Chennai experience discovery app)'
-          },
-          body: query
-        });
+  for (const endpoint of endpoints) {
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `data=${encodeURIComponent(query)}`
+      });
 
-        if (!response.ok) continue;
-
-        const data = await response.json();
-        if (data.elements) return data.elements;
-      } catch (e) {
-        continue;
-      }
+      if (!response.ok) continue;
+      const text = await response.text();
+      if (text.includes('DOCTYPE') || text.includes('<html')) continue;
+      const data = JSON.parse(text);
+      if (data.elements && data.elements.length >= 0) return data.elements;
+    } catch (e) {
+      continue;
     }
-    return [];
   }
+  return [];
+}
 
   getNearbyExperiences(lat: number, lng: number, category: string, radius: number, budget?: string): Observable<any> {
     const tagFilter = this.categoryMap[category] || '["tourism"="attraction"]';
