@@ -65,25 +65,25 @@ export class LocationService {
     { name: 'Airport', line: 'Blue', coords: { lat: 12.9824, lng: 80.1769 } }
   ];
 
-  getCurrentLocation(): Observable<Coordinates> {
-    return new Observable(observer => {
-      if (!navigator.geolocation) {
-        observer.error('Geolocation is not supported');
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          observer.next({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-          observer.complete();
-        },
-        error => observer.error(error),
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    });
-  }
+getCurrentLocation(): Observable<Coordinates> {
+  return new Observable(observer => {
+    if (!navigator.geolocation) {
+      observer.error('Geolocation is not supported');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        observer.next({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
+        observer.complete();
+      },
+      error => observer.error(error),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  });
+}
 
   getNearestStation(userCoords: Coordinates): MetroStation {
     let nearest = this.metroStations[0];
