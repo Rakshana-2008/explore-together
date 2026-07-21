@@ -77,14 +77,11 @@ export class ExperienceService {
     });
   }
 
-  private buildQuery(tagFilter: string, lat: number, lng: number, radius: number): string {
-    return `[out:json][timeout:25];
-(
-  node${tagFilter}(around:${radius},${lat},${lng});
-  way${tagFilter}(around:${radius},${lat},${lng});
-);
-out center 30;`;
-  }
+private buildQuery(tagFilter: string, lat: number, lng: number, radius: number): string {
+  return `[out:json][timeout:10];
+node${tagFilter}(around:${radius},${lat},${lng});
+out 20;`;
+}
 
   private mapResults(elements: any[], category: string): any[] {
     return elements
