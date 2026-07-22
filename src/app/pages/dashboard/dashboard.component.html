@@ -25,6 +25,10 @@
     </div>
   </div>
 
+  <div class="debug-location" *ngIf="userCoords">
+  📍 Your coords: {{ userCoords.lat }}, {{ userCoords.lng }}
+</div>
+
   <div class="categories-section">
     <h2>What are you looking for?</h2>
     <p class="subtitle">Pick a category to discover real experiences near you</p>

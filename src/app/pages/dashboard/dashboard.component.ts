@@ -45,9 +45,8 @@ categories = [
 detectLocation() {
   this.locationService.getCurrentLocation().subscribe({
     next: (coords) => {
-      console.log('Your coords:', coords);
+      this.userCoords = coords;
       this.nearestStation = this.locationService.getNearestStation(coords);
-      console.log('Nearest station:', this.nearestStation);
       this.locationLoading = false;
     },
     error: () => {
